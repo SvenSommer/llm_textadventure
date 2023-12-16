@@ -1,0 +1,75 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    text-align: center;
+    padding: 20px;
+}
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.situation {
+    margin-bottom: 20px;
+    font-size: 1.2em;
+    color: #555;
+}
+
+.options {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.options button {
+    margin: 5px 0; /* Ändern Sie dies, um Abstand nur oben und unten hinzuzufügen */
+    padding: 10px 15px;
+    font-size: 1em;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 200px; /* Feste Breite für die Schaltflächen */
+}
+
+.options button:hover {
+    background-color: #0056b3;
+}
+
+.back-button {
+    padding: 10px 15px;
+    font-size: 1em;
+    color: white;
+    background-color: #28a745;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.back-button:hover {
+    background-color: #218838;
+}
+
+#language-dropdown {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+#language-select {
+    padding: 10px;
+    font-size: 1em;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+}
+
+#language-select:focus {
+    outline: none;
+    border-color: #007bff;
+}

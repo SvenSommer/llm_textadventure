@@ -68,12 +68,18 @@ function initcurrentSituation(language) {
             place: undefined,
             init_complete: false,
             options: [
-                "Eine verzauberte Burg",
                 "Ein futuristisches Raumschiff",
                 "Ein geheimnisvoller Dschungel",
                 "Eine mittelalterliche Stadt",
                 "Eine verlassene Unterwasserstadt",
-                "Eine dystopische Metropole"
+                "Eine verlassene Insel",
+                "Das Hogwards Schloss",
+                "Das legendäre Ninjago City",
+                "Die Zentrale von PAW Patrol",
+                "Gotham City - die Stadt von Batman",
+                "Die Stadt von Spiderman",
+                "Die Stadt von Superman",
+
             ],
             language: language
         };
@@ -116,13 +122,9 @@ async function generateAndDisplayImage(imageText) {
 
 
 
-
-// HTML elements remain the same
-
-
 function displayOptions(options) {
     const optionsDiv = document.getElementById('options');
-    optionsDiv.classList.remove('fade-out');//
+    optionsDiv.classList.remove('fade-out');
     optionsDiv.innerHTML = '';
 
     if (options.length === 0) {
@@ -130,14 +132,40 @@ function displayOptions(options) {
         return;
     }
 
-    options.forEach(option => {
+    // Begrenzen der anfänglich angezeigten Optionen auf fünf
+    const displayedOptions = options.slice(0, 3);
+    displayedOptions.forEach(option => {
         optionsDiv.appendChild(createButton(option, () => selectOption(option)));
     });
 
+    // Button zum Anzeigen weiterer Optionen, wenn es mehr als fünf gibt
+    if (options.length > 3) {
+        const moreOptionsButton = createButton('Zeige weitere Möglichkeiten...', () => showMoreOptions(options));
+        moreOptionsButton.id = 'more-options-button';
+        optionsDiv.appendChild(moreOptionsButton);
+    }
+
+    // '+'-Button immer am Ende
     const addOptionButton = createButton('+', addNewOption);
     addOptionButton.id = 'add-option-button';
     optionsDiv.appendChild(addOptionButton);
 }
+
+function showMoreOptions(options) {
+    const optionsDiv = document.getElementById('options');
+    optionsDiv.innerHTML = ''; // Löschen der bisherigen Optionen
+
+    // Alle Optionen anzeigen
+    options.forEach(option => {
+        optionsDiv.appendChild(createButton(option, () => selectOption(option)));
+    });
+
+    // '+'-Button wieder hinzufügen
+    const addOptionButton = createButton('+', addNewOption);
+    addOptionButton.id = 'add-option-button';
+    optionsDiv.appendChild(addOptionButton);
+}
+
 
 function createButton(text, clickHandler) {
     const button = document.createElement('button');
@@ -202,7 +230,10 @@ const loadingTexts = [
     "Das ist ungewöhnlich...",
     "Das ist unerwartet...",
     "Schauen wir uns das mal an...",
-    "Das ist eine interessante Wahl..."
+    "Das ist eine interessante Wahl...",
+    "Ok, ganz schön mutig...",
+    "Ok, das ist mutig...",
+    "Das trauen sich nicht viele...",
 
     // Fügen Sie hier weitere Texte hinzu
 ];

@@ -40,35 +40,34 @@ async function generate_next_situation(situation, option, language) {
   else {
     // Verwendung von Template-Literalen für den Prompt
     prompt = `{
-      {
-        "${intro_prompt_string}",
-        "last_situation": {
-          "place": "${situation.place}",
-          "character": "${situation.character}",
-          "story_summary": "${situation.story_summary}",
-          "situation_summary": "${situation.situation_summary}",
-          "situation_image": "${situation.situation_image}",
-          "selected_option": "${option}"
-        },
-        "task": "Generiere eine neue Situation für das Textadventure. Ort und Charakter bleiben gleich. Die neue Situation soll eine Fortsetzung der letzten sein, basierend auf der gewählten Option. Entwickle eine neue Situationsskizze und erweitere die Gesamtgeschichte entsprechend. Stelle sechs neue Handlungsoptionen vor. Beschreibe zudem ein Bild der Situation für einen Maler. Beachte die jewiligen Anweisungen in den "[" "]" Klammern",
-        "new_situation": {
-          "place": "${situation.place}",
-          "character": "${situation.character}",
-          "situation_summary": "[Reagiere auf die ausgewählte Option aus der 'last_situation'. Die Zusammenfassung der neuen Situation sollte 3 bis 10 Sätze umfassen.]",
-          "story_summary": "[Fasse die gesamte Geschichte einschließlich der neuen Entwicklung zusammen.]",
-          "situation_image": "[Beschreibe ein Bild der neuen Situation für Maler. Fange mit dem wichtigesten an und gib klare Anweisungen. Benutze einfache Sprache. In dem Bild soll die Spannung zu spüren sein, die die aktuelle Situation widerspiegelt.. Die Beschreibung sollte detailreich sein, um ein aussagekräftiges Bild zu erzeugen. Schreibe mindestens 5 Sätze.]",
-          "options": [
-            "[Option 1]",
-            "[Option 2]",
-            "[Option 3]",
-            "[Option 4]",
-            "[Option 5]",
-            "[Option 6]"
-          ],
-          "language": "${language}"
-        }
+      "${intro_prompt_string}",
+      "last_situation": {
+        "place": "${situation.place}",
+        "character": "${situation.character}",
+        "story_summary": "${situation.story_summary}",
+        "situation_summary": "${situation.situation_summary}",
+        "situation_image": "${situation.situation_image}",
+        "selected_option": "${option}"
+      },
+      "task": "[Generate a new situation for the text adventure. Keep the location and character the same. The new situation should be a continuation of the last one, based on the selected option. Develop a new situation sketch and expand the overall story accordingly. Present six new action options. Also, describe an image of the situation for a painter. Make sure that all outputs (except the image description) are in the language specified in the 'language' tag.]",
+      "new_situation": {
+        "place": "${situation.place}",
+        "character": "${situation.character}",
+        "situation_summary": "[Respond to the selected option from the 'last_situation'. The summary of the new situation should be 3 to 10 sentences long.]",
+        "story_summary": "[Summarize the entire story, including the new development.]",
+        "situation_image": "[Describe an image of the new situation for a painter. Start with the most important details and provide clear instructions. Use simple language. The image should convey the tension reflecting the current situation. The description should be detailed to create a meaningful picture. Write maximim 3 sentences.]",
+        "options": [
+          "[Option 1]",
+          "[Option 2]",
+          "[Option 3]",
+          "[Option 4]",
+          "[Option 5]",
+          "[Option 6]"
+        ],
+        "language": "${language}"  // Use this as default language for all content except the imagedescription.
       }
-    `;
+    }`;
+    
   }
   const maxRetries = 3;
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
@@ -130,7 +129,7 @@ function parseAndVerifyApiResponse(responseText, oldSituation) {
       return logErrorAndReturnNull('Keine gültige neue Situationsbild in Antwort erhalten');
     }
 
-    if (!Array.isArray(options) || options.length !== 6) {
+    if (!Array.isArray(options)) {
       return logErrorAndReturnNull('Keine gültigen neuen Optionen in Antwort erhalten');
     }
 

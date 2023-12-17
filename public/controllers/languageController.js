@@ -50,7 +50,7 @@
     }
     else if (language === 'de') {
         currentSituation = {
-            situation_summary: 'He Abenenteuer! Wähle den Ort an dem sich dein Leben für immer ändern wird.',
+            situation_summary: 'Hey Abenteurer! Wähle den Ort, an dem sich dein Leben für immer ändern wird.',
             character: undefined,
             place: undefined,
             init_complete: false,

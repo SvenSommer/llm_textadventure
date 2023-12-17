@@ -35,7 +35,7 @@ body {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    width: 200px; /* Feste Breite für die Schaltflächen */
+    width: 600px; /* Feste Breite für die Schaltflächen */
 }
 
 .options button:hover {

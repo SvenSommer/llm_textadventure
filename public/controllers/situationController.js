@@ -1,13 +1,7 @@
 
-const { OpenAIAPI } = require('openai');
+const OpenAI = require('openai');
 const Situation = require('../models/situation');
 
-function generate_next_mock_situation(situation, option) {
-  
-  current_situation =  new Situation(situation.place, situation.character, generate_mock_situation_summary(option), generate_mock_options(option), situation.language);
-  console.log(current_situation);
-  return current_situation;
-}
 
 async function generate_next_situation(situation, option) {
   // API-Schlüssel von OpenAI
@@ -16,10 +10,10 @@ async function generate_next_situation(situation, option) {
     throw new Error('API-Schlüssel fehlt.');
   }
   // Erstellen Sie eine Instanz des OpenAI API-Client
-  const openai = new OpenAIAPI({ apiKey });
-
+  const openai = new OpenAI({ apiKey });
+  intro_prompt_string = `Dies ist ein automatisierter Prompt aus einem Textadventure. Bitte gib nur das json Object "new_situation" mit der neuen Summary und den Options als Antwort zurück!`;
   // Verwendung von Template-Literalen für den Prompt
-  const prompt = `${intro_prompt_string} {
+  const prompt = `{"${intro_prompt_string}"
     "last_situation": {
       "place": "${situation.place}",
       "character": "${situation.character}",
@@ -31,7 +25,7 @@ async function generate_next_situation(situation, option) {
     "new_situation": {
       "place": "${situation.place}",
       "character": "${situation.character}",
-      "summary": "[Beschreibe, wie sich die Situation nach der Vorbereitung des traditionellen Heilmittels entwickelt hat]",
+      "summary": "[Reagiere auf die 'last_situation.seletected_option' so, wie es ein Textabenteuerspiel tun würde. Die 'summary' muss zwischen 3 und 10 Sätzen liegen.]",
       "options": [
         "[Neue Option 1]",
         "[Neue Option 2]",
@@ -45,45 +39,76 @@ async function generate_next_situation(situation, option) {
   }`;
 
   try {
-    // Senden Sie die Anfrage an die OpenAI API
-    const response = await openai.completions.create({
-      model: 'text-davinci-003', // Oder ein anderes Modell Ihrer Wahl
-      prompt: prompt,
-      max_tokens: 150 // Anpassen basierend auf der erwarteten Antwortlänge
+    const response = await openai.chat.completions.create({
+      model: 'gpt-3.5-turbo-0613', // Stellen Sie sicher, dass Sie das korrekte Modell verwenden
+      messages: [{
+        role: "user",
+        content: prompt
+      }]
     });
+    const parsedResponse = parseAndVerifyApiResponse(response.choices[0].message.content, situation);
+    if (!parsedResponse) {
+      console.error('Keine gültige Antwort erhalten');
+      return null; // Oder behandeln Sie den Fehler wie gewünscht
+    }
+    const newSummary = parsedResponse.new_situation.summary.trim();
+    const newOptions = parsedResponse.new_situation.options;
+    const newSituation = new Situation(situation.place, situation.character, newSummary, newOptions, situation.language);
 
-
-    // Extrahieren Sie die Antwort und erstellen Sie die neue Situation
-    const newSummary = response.choices[0].text.trim();
-    const newSituation = new Situation(situation.place, situation.character, newSummary, generate_mock_options(option), situation.language);
-
-    console.log(newSituation);
-    return newSituation;
+    //console.log('New Situation:', newSituation);
+    return newSituation
   } catch (error) {
+    console.log('Prompt:', prompt);
     console.error('Fehler bei der API-Anfrage:', error);
     throw error;
   }
 }
 
+function parseAndVerifyApiResponse(responseText, oldSituation) {
+  try {
+    const parsedText = JSON.parse(responseText);
 
+    // Utility function for logging and error handling
+    function logErrorAndReturnNull(errorMessage) {
+      console.log('API-Antwort:', responseText);
+      console.error(errorMessage);
+      return null;
+    }
 
-function generate_mock_situation_summary(option) {
-  return "Der weise Heiler befindet sich in einem kleinen, abgelegenen Dorf im Wilden Westen. Das Dorf wird von einer rätselhaften Krankheit heimgesucht, die die Bewohner schwächt. Gerüchte über eine seltene Heilpflanze in einem gefährlichen, nahen Canyon machen die Runde. Der Heiler muss entscheiden, wie er dem Dorf am besten helfen kann, während er gleichzeitig mit dem Misstrauen der Dorfbewohner und den Gefahren der Wildnis konfrontiert ist.";
+    // Check if parsedText and necessary properties are valid
+    if (!parsedText || !parsedText.new_situation) {
+      return logErrorAndReturnNull('Keine gültige neue Situation in Antwort erhalten');
+    }
+
+    const { summary, options } = parsedText.new_situation;
+
+    if (!summary) {
+      return logErrorAndReturnNull('Keine gültige neue Zusammenfassung in Antwort erhalten');
+    }
+
+    if (!Array.isArray(options) || options.length !== 6) {
+      return logErrorAndReturnNull('Keine gültigen neuen Optionen in Antwort erhalten');
+    }
+
+    // Check if the first option of the new situation is identical to the old situation
+    if (options.includes(oldSituation.options[0])) {
+      console.log("oldSituation:", oldSituation);
+      return logErrorAndReturnNull('Die erste Option ist identisch mit der ersten Option der vorherigen Situation');
+    }
+
+    return parsedText;
+
+  } catch (error) {
+    console.log('API-Antwort:', responseText);
+    console.error('Fehler beim Parsen der API-Antwort:', error);
+
+    return null;
+  }
 }
 
-function generate_mock_options(option) {
-  const options = [];
-  options.push("Untersuche die Symptome der Kranken, um mehr über die Krankheit herauszufinden.",);
-  options.push("Begib dich in den Canyon, um die seltene Heilpflanze zu suchen.");
-  options.push("Berate dich mit den Dorfältesten, um mehr über lokale Heilmittel und Traditionen zu erfahren.");
-  options.push("Bereite mit den vorhandenen Kräutern ein traditionelles Heilmittel vor.");
-  options.push("Lehre die Dorfbewohner, wie sie sich besser vor der Krankheit schützen können.");
-  options.push("Suche nach anderen Heilern oder Weisen in der Umgebung, die möglicherweise helfen können.");
-  options.push("Verlasse das Dorf und suche nach einem anderen Ort, an dem du gebraucht wirst.");
-  return options;
-}
 
-module.exports = {
-  generate_next_mock_situation,
-  generate_next_situation
-};
+
+
+
+exports.generate_next_situation = generate_next_situation;
+

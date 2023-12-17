@@ -14,7 +14,7 @@ body {
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-.situation {
+.situation_summary {
     margin-bottom: 20px;
     font-size: 1.2em;
     color: #555;
@@ -41,6 +41,52 @@ body {
 .options button:hover {
     background-color: #0056b3;
 }
+
+.hidden {
+    display: none;
+}
+
+.option-input-group {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    width: 100%; /* Stellt sicher, dass der Container den verfügbaren Platz einnimmt */
+}
+
+
+.options input[type="text"] {
+    padding: 10px;
+    font-size: 1em;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    flex-grow: 1; /* Erlaubt dem Textfeld, den verfügbaren Platz auszufüllen */
+    margin-right: 10px; /* Optional, fügt Abstand zwischen Textfeld und Button hinzu */
+}
+
+
+/* Erhöhte Spezifität für den Bestätigungsbutton */
+.options .confirm-button {
+    padding: 10px 15px;
+    font-size: 1em;
+    color: white;
+    background-color: green;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: auto; /* Setzt die Breite des Buttons auf den Inhalt */
+}
+
+
+.options .confirm-button:hover {
+    background-color: darkgreen;
+}
+
+
+/* Stil für das Checkmark-Symbol */
+.checkmark-icon {
+    font-weight: bold;
+}
+
 
 .back-button {
     padding: 10px 15px;

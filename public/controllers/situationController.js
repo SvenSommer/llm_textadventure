@@ -17,81 +17,93 @@ async function generate_next_situation(situation, option, language) {
 
   if (situation.character === undefined) {
     prompt = `{
-    "${intro_prompt_string}",
-    "task": "Erstelle die Anfangssituation eines Textadventures. Der Spieler soll zu Beginn des Spiels den Charakter wählen. Formuliere mehrere spannende und abwechslungsreiche Charaktere, die für ein Textadventure geeignet sind und zu new_situation.place passen.
-    Außerdem führe den Spieler in die Geschichte ein und formuliere eine Zusammenfassung ('summary') wo der Character herkommt und wo er sich aktuell befindet und definiere die 'story_summary' als eine Zusammenfassung der bisherigen Geschichte.",
-    "new_situation": {
-      "place": "${option}",
-      "character": "Vom Spieler zu definieren",
-      "summary": "[Definiere eine Zusammenfassung für die Anfangssituation. Frage dann, 'Wer möchtest du sein?' und formuliere die Optionen entsprechend der Charaktere, die du formuliert hast.]",
-      "story_summary": "[Definiere eine Anfang der gesamten Geschichte. Was ist bisher passiert?]",
-      "options": [
-        "[Character Option 1]",
-        "[Character Option 2]",
-        "[Character Option 3]",
-        "[Character Option 4]",
-        "[Character Option 5]",
-        "[Character Option 6]"
-      ],
-      "language": "de"
+      "${intro_prompt_string}",
+      "task": "Erstelle die Anfangssituation eines Textadventures. Der Spieler soll zu Beginn des Spiels aus einer Reihe von Charakteren wählen. Entwickle spannende und vielfältige Charaktere, die zum gewählten Ort (new_situation.place) passen. Führe den Spieler in die Geschichte ein und formuliere eine Zusammenfassung ('situation_summary'), die beschreibt, woher der Charakter kommt und wo er sich aktuell befindet, inklusive einer Bildbeschreibung ('situation_image'). Definiere die 'story_summary' als eine Zusammenfassung der bisherigen Geschichte aus Erzählersicht.",
+      "new_situation": {
+        "place": "${option}",
+        "character": "Vom Spieler zu definieren",
+        "story_summary": "[Entwickle den Anfang der Geschichte aus der Perspektive des Erzählers. Was ist bisher in der Welt des Spiels passiert?]",
+        "situation_summary": "[Stelle die Anfangssituation vor. Frage den Spieler: 'Wer möchtest du sein?' und biete Charakteroptionen an, die zuvor entwickelt wurden.]",
+        "situation_image": "[Beschreibe ein Bild für Dall-E, das den gewählten Ort in seiner aktuellen Situation zeigt. Die Beschreibung sollte detailreich sein, um ein aussagekräftiges Bild zu erzeugen.]",
+        "options": [
+          "[Definiere Charakteroption 1]",
+          "[Definiere Charakteroption 2]",
+          "[Definiere Charakteroption 3]",
+          "[Definiere Charakteroption 4]",
+          "[Definiere Charakteroption 5]",
+          "[Definiere Charakteroption 6]"
+        ],
+        "language": "${language}"
       }
     }`;
   }
   else {
     // Verwendung von Template-Literalen für den Prompt
-    prompt = `{"${intro_prompt_string}"
-    "last_situation": {
-      "place": "${situation.place}",
-      "character": "${situation.character}",
-      "summary": "${situation.summary}",
-      "story_summary": "${situation.story_summary}",
-      "options": ${JSON.stringify(situation.options)},
-      "selected_option": "${option}"
-    },
-    "task": "Generiere eine neue Situation für das Textadventure. Der Ort ('place') und der Charakter ('character') sollen gleich bleiben. Die neue Situation sollte eine Fortsetzung der letzten sein und auf der gewählten Option basieren. Formuliere eine neue Zusammenfassung ('summary') und sechs neue Handlungsoptionen ('options').",
-    "new_situation": {
-      "place": "${situation.place}",
-      "character": "${situation.character}",
-      "summary": "[Reagiere auf die 'last_situation.seletected_option' so, wie es ein Textabenteuerspiel tun würde. Die 'summary' muss zwischen 3 und 10 Sätzen liegen.]",
-      "story_summary": "[Schreibe fort und fasse zusammen, was bisher in der gesamten Geschichte passiert ist, mit der Ergänzung der neuen Situation.]"
-      "options": [
-        "[Neue Option 1]",
-        "[Neue Option 2]",
-        "[Neue Option 3]",
-        "[Neue Option 4]",
-        "[Neue Option 5]",
-        "[Neue Option 6]"
-      ],
-      "language": "de"
-    }
-  }`;
+    prompt = `{
+      {
+        "${intro_prompt_string}",
+        "last_situation": {
+          "place": "${situation.place}",
+          "character": "${situation.character}",
+          "story_summary": "${situation.story_summary}",
+          "situation_summary": "${situation.situation_summary}",
+          "situation_image": "${situation.situation_image}",
+          "selected_option": "${option}"
+        },
+        "task": "Generiere eine neue Situation für das Textadventure. Ort und Charakter bleiben gleich. Die neue Situation soll eine Fortsetzung der letzten sein, basierend auf der gewählten Option. Entwickle eine neue Situationsskizze und erweitere die Gesamtgeschichte entsprechend. Stelle sechs neue Handlungsoptionen vor. Beschreibe zudem ein Bild für Dall-E, das den Charakter in seiner aktuellen Situation am aktuellen Ort zeigt.",
+        "new_situation": {
+          "place": "${situation.place}",
+          "character": "${situation.character}",
+          "situation_summary": "[Reagiere auf die ausgewählte Option aus der 'last_situation'. Die Zusammenfassung der neuen Situation sollte 3 bis 10 Sätze umfassen.]",
+          "story_summary": "[Fasse die gesamte Geschichte einschließlich der neuen Entwicklung zusammen.]",
+          "situation_image": "[Beschreibe ein Bild für Dall-E, das den Charakter in seiner aktuellen Situation am aktuellen Ort darstellt. Die Beschreibung sollte detailliert genug sein, um ein aussagekräftiges Bild zu erzeugen.]",
+          "options": [
+            "[Option 1]",
+            "[Option 2]",
+            "[Option 3]",
+            "[Option 4]",
+            "[Option 5]",
+            "[Option 6]"
+          ],
+          "language": "${language}"
+        }
+      }
+    `;
   }
+  const maxRetries = 3;
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log('Sending prompt to OpenAI API with option:', option, 'and attempt:', attempt, '..');
+      const response = await openai.chat.completions.create({
+        model: 'gpt-3.5-turbo-0613', // Stellen Sie sicher, dass Sie das korrekte Modell verwenden
+        messages: [{
+          role: "user",
+          content: prompt
+        }]
+      });
+      const parsedResponse = parseAndVerifyApiResponse(response.choices[0].message.content, situation);
+      if (!parsedResponse) {
+        console.log("Ungültige Antwort erhalten, erneuter Versuch...");
+      }
+      if (parsedResponse) {
+        const newSituation_summary = parsedResponse.new_situation.situation_summary.trim();
+        const newStorySummary = parsedResponse.new_situation.story_summary.trim();
+        const newSituationImage = parsedResponse.new_situation.situation_image.trim();
+        const newOptions = parsedResponse.new_situation.options;
+        const newSituation = new Situation(situation.init_complete, situation.place, situation.character, newStorySummary, newSituation_summary, newSituationImage, newOptions, situation.language);
 
-  try {
-    console.log('Prompt:', prompt);
-    const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo-0613', // Stellen Sie sicher, dass Sie das korrekte Modell verwenden
-      messages: [{
-        role: "user",
-        content: prompt
-      }]
-    });
-    const parsedResponse = parseAndVerifyApiResponse(response.choices[0].message.content, situation);
-    if (!parsedResponse) {
-      console.error('Keine gültige Antwort erhalten');
-      return null; // Oder behandeln Sie den Fehler wie gewünscht
+        //console.log('New Situation:', newSituation);
+        return newSituation
+      }
+    } catch (error) {
+      console.error(`Fehler bei Versuch ${attempt}:`, error);
+      console.log('Prompt:', prompt);
+      console.error('Fehler bei der API-Anfrage:', error);
+      if (attempt === maxRetries) {
+        throw new Error("Maximale Anzahl an Versuchen erreicht, Abbruch der Operation.");
+      }
+
     }
-    const newSummary = parsedResponse.new_situation.summary.trim();
-    const newStorySummary = parsedResponse.new_situation.story_summary.trim();
-    const newOptions = parsedResponse.new_situation.options;
-    const newSituation = new Situation(situation.init_complete, situation.place, situation.character, newSummary, newStorySummary, newOptions, situation.language);
-
-    //console.log('New Situation:', newSituation);
-    return newSituation
-  } catch (error) {
-    console.log('Prompt:', prompt);
-    console.error('Fehler bei der API-Anfrage:', error);
-    throw error;
   }
 }
 
@@ -108,10 +120,14 @@ function parseAndVerifyApiResponse(responseText, oldSituation) {
 
     // Check if parsedText and necessary properties are valid
 
-    const { summary, options } = parsedText.new_situation;
+    const { situation_summary, situation_image, options } = parsedText.new_situation;
 
-    if (!summary) {
-      return logErrorAndReturnNull('Keine gültige neue Zusammenfassung in Antwort erhalten');
+    if (!situation_summary) {
+      return logErrorAndReturnNull('Keine gültige neue Zusammenfassung der Situation in Antwort erhalten');
+    }
+
+    if (!situation_image) {
+      return logErrorAndReturnNull('Keine gültige neue Situationsbild in Antwort erhalten');
     }
 
     if (!Array.isArray(options) || options.length !== 6) {

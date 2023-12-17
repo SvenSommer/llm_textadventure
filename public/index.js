@@ -1,5 +1,5 @@
 
-require('dotenv').config();
+//require('dotenv').config();
 
 
 let language = 'de';
@@ -15,7 +15,7 @@ function initializeGame() {
 function initcurrentSituation(language) {
     if (language === 'en') {
         currentSituation = {
-            summary: 'Where do you want your adventure to take place?',
+            situation_summary: 'Where do you want your adventure to take place?',
             character: undefined,
             place: undefined,
             init_complete: false,
@@ -31,7 +31,7 @@ function initcurrentSituation(language) {
     }
     else if (language === 'fr') {
         currentSituation = {
-            summary: 'Où voulez-vous que votre aventure se déroule?',
+            situation_summary: 'Où voulez-vous que votre aventure se déroule?',
             character: undefined,
             place: undefined,
             init_complete: false,
@@ -47,7 +47,7 @@ function initcurrentSituation(language) {
     }
     else if (language === 'es') {
         currentSituation = {
-            summary: '¿Dónde quieres que se desarrolle tu aventura?',
+            situation_summary: '¿Dónde quieres que se desarrolle tu aventura?',
             character: undefined,
             place: undefined,
             init_complete: false,
@@ -63,7 +63,7 @@ function initcurrentSituation(language) {
     }
     else if (language === 'de') {
         currentSituation = {
-            summary: 'Wähle den Ort für das Textadventure.',
+            situation_summary: 'Wähle den Ort für das Textadventure.',
             character: undefined,
             place: undefined,
             init_complete: false,
@@ -88,13 +88,29 @@ function updateSituation(situation) {
     updateBackButtonVisibility(); 
 }
 
-function displaySituation(situation) {
-    const situationDiv = document.getElementById('situation');
-    situationDiv.textContent = situation.summary;
-    console.log('Current situation:', situation);
+async function displaySituation(situation) {
+    // Textinhalt sofort anzeigen
+    const situationDiv = document.getElementById('situation_summary');
+    situationDiv.textContent = situation.situation_summary;
+    const storyDiv = document.getElementById('story_summary');
+    storyDiv.textContent = situation.story_summary;
 
+    // Bild nur laden, wenn situation.situation_image definiert ist
+    if (situation.situation_image !== undefined) {
+        const situationImage = document.getElementById('situation_image');
+        let imageurl = await generateImage(situation.situation_image);
+        console.log("imageurl", imageurl);
+        situationImage.src = imageurl;
+    }
+
+    // Optionen anzeigen
     displayOptions(situation.options);
 }
+
+
+
+// HTML elements remain the same
+
 
 function displayOptions(options) {
     const optionsDiv = document.getElementById('options');
@@ -108,6 +124,10 @@ function displayOptions(options) {
     options.forEach(option => {
         optionsDiv.appendChild(createButton(option, () => selectOption(option)));
     });
+
+    const addOptionButton = createButton('+', addNewOption);
+    addOptionButton.id = 'add-option-button';
+    optionsDiv.appendChild(addOptionButton);
 }
 
 function createButton(text, clickHandler) {
@@ -116,6 +136,42 @@ function createButton(text, clickHandler) {
     button.addEventListener('click', clickHandler);
     return button;
 }
+
+function addNewOption() {
+    const optionsDiv = document.getElementById('options');
+    const addOptionButton = document.getElementById('add-option-button');
+
+    // Verstecken des "+" Buttons
+    addOptionButton.classList.add('hidden');
+
+    // Erstellen eines Flex-Containers für das Eingabefeld und den Button
+    const inputGroupDiv = document.createElement('div');
+    inputGroupDiv.classList.add('option-input-group');
+    optionsDiv.appendChild(inputGroupDiv);
+
+    // Erstellen des Textfelds für neue Optionen
+    const newOptionInput = document.createElement('input');
+    newOptionInput.type = 'text';
+    newOptionInput.placeholder = 'Neue Option eingeben';
+    inputGroupDiv.appendChild(newOptionInput);
+
+    // Erstellen des Bestätigungsbuttons mit Checkmark-Symbol
+    const confirmButton = document.createElement('button');
+    confirmButton.classList.add('confirm-button');
+    confirmButton.innerHTML = '&#10004;'; // Unicode für Checkmark
+    confirmButton.addEventListener('click', () => confirmNewOption(newOptionInput.value));
+    inputGroupDiv.appendChild(confirmButton);
+}
+
+
+
+function confirmNewOption(newOption) {
+    if (newOption.trim() !== '') {
+        currentSituation.options.push(newOption)
+        displayOptions(currentSituation.options);
+    }
+}
+
 
 
 async function selectOption(option) {
@@ -149,6 +205,46 @@ async function queryNextSituation(situation, option, language) {
     const data = await response.json();
     return data.situation;
 }
+
+
+async function generateImage(situationImageDescription) {
+    if (!situationImageDescription) {
+      return;
+    }
+    console.log('Generating image for:', situationImageDescription)
+    
+    try {
+      // Create the request payload
+      const payload = {
+        situation_image: situationImageDescription
+      };
+  
+      // Make the POST request to the backend
+      const response = await fetch('/generate-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+  
+      // Check if the request was successful
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
+      // Extract the JSON response
+      const data = await response.json();
+      return_imageurl = data.imageUrl;
+      console.log('Generated image URL:', return_imageurl);
+      // Return the image   URL
+      return return_imageurl
+    } catch (error) {
+      console.error('Error generating image:', error);
+      // Handle or rethrow the error as needed
+      throw error;
+    }
+  }
 
 function updateBackButtonVisibility() {
     const backButton = document.getElementById('back-button');

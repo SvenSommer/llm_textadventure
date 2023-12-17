@@ -1,6 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 const {generate_next_situation, generate_next_mock_situation } = require('./public/controllers/situationController');
+const { query_image } = require('./public/controllers/imageController');
 
 const app = express();
 app.use(express.json());
@@ -22,15 +23,13 @@ app.post('/generate_next_situation', async (req, res) => {
 });
 
 app.post('/generate-image', async (req, res) => {
-  const description = req.body.description;
-  const response = await axios.post('https://api.openai.com/v1/dalle-generate', {
-    description,
-  }, {
-    headers: {
-      'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-    },
-  });
-  res.json({ imageUrl: response.data.imageUrl });
+  if (!req.body || !req.body.situation_image) {
+    return res.status(400).json({ error: 'No situation image provided' });
+  }
+  const situation_image = req.body.situation_image;
+   imageUrl = await query_image(situation_image);
+  return res.json({ imageUrl });
+  
 });
 
 app.listen(3000, () => console.log('Server running on port 3000'));

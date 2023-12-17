@@ -56,7 +56,6 @@
             init_complete: false,
             options: [
                 "Ein futuristisches Raumschiff",
-                "Ein geheimnisvoller Dschungel",
                 "Eine mittelalterliche Stadt",
                 "Eine verlassene Unterwasserstadt",
                 "Eine verlassene Insel",

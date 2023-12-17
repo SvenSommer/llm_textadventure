@@ -29,6 +29,8 @@ async function displaySituation(situation) {
     imageTextElement.textContent = situation.situation_image
     imageTextElement.onclick = () => generateAndDisplayImage(situation.situation_image);
 
+    const polaroidDiv = document.getElementById('polaroid');
+    polaroidDiv.style.display = 'block'; // Show the polaroid
     // Display options
     displayOptions(situation.options);
 }
@@ -37,11 +39,21 @@ async function generateAndDisplayImage(imageText) {
     if (imageText) {
         let imageurl = await generateImage(imageText);
         console.log("imageurl", imageurl);
+
         const situationImage = document.getElementById('situation_image');
+        const imageTextElement = document.getElementById('image_text');
+        const polaroidDiv = document.getElementById('polaroid');
+
         situationImage.src = imageurl;
-        situationImage.style.display = 'block'; // Show the image
+        situationImage.alt = imageText; // Setzen des alternativen Textes
+        situationImage.style.display = 'block'; // Bild anzeigen
+
+        imageTextElement.style.display = 'none'; // Text ausblenden
+
+        polaroidDiv.style.display = 'block'; // Polaroid anzeigen
     }
 }
+
 
 
 export function createButton(text, clickHandler) {
@@ -97,6 +109,8 @@ export async function selectOption(option) {
     document.getElementById('story_summary').textContent = undefined;
     const situationImage = document.getElementById('situation_image');
     situationImage.style.display = 'none';
+    const polaroidDiv = document.getElementById('polaroid');
+    polaroidDiv.style.display = 'none';
 
     // Überprüfen, ob ein Charakter ausgewählt wurde und die Situation aktualisieren
     if (currentSituation.place === undefined) {
@@ -181,5 +195,10 @@ document.getElementById('language-select').addEventListener('change', async func
     currentSituation = initCurrentSituation(language);
     updateSituation(currentSituation);
 });
+
+window.onload = function() {
+    const polaroidDiv = document.getElementById('polaroid');
+    polaroidDiv.style.display = 'none';
+};
 
 initializeGame();

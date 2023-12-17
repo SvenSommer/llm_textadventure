@@ -6,6 +6,23 @@ body {
     padding: 20px;
 }
 
+h1 {
+    font-family: 'Georgia', serif; /* Eine stilvolle, aber lesbare Schriftart */
+    color: #3e4a52; /* Eine dunklere, abenteuerliche Farbe */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Schatten für Tiefe */
+    font-size: 2.5em; /* Größere Schriftgröße für Präsenz */
+    margin-bottom: 20px; /* Abstand zum nächsten Element */
+    letter-spacing: 2px; /* Buchstabenabstand für einen ausgeprägten Look */
+    text-transform: uppercase; /* Großbuchstaben für mehr Wirkung */
+    background: linear-gradient(45deg, #ff6f00, #ffcc00); /* Hintergrundverlauf für Dynamik */
+    -webkit-background-clip: text; /* Hintergrundclip für Text */
+    color: transparent; /* Farbe transparent für den Verlaufseffekt */
+    -webkit-text-fill-color: transparent; /* Textfüllfarbe transparent für den Verlauf */
+}
+
+
+
+
 .container {
     width: 80%;
     margin: 0 auto;
@@ -16,31 +33,72 @@ body {
 
 .situation_summary {
     margin-bottom: 20px;
-    font-size: 1.2em;
-    color: #555;
+    font-size: 1.4em; /* Erhöhte Schriftgröße */
+    color: #333; /* Dunklere Schriftfarbe für bessere Lesbarkeit */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2); /* Leichter Schatten für Tiefe */
+    background-color: rgba(255, 255, 255, 0.8); /* Leicht transparenter Hintergrund */
+    padding: 10px; /* Innerer Abstand */
+    border-radius: 5px; /* Abgerundete Ecken */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Box-Schatten für mehr Tiefe */
+}
+
+
+.polaroid {
+    width: 320px; /* Adjust as necessary */
+    background-color: white;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    margin: 20px auto;
+    padding: 10px 10px 20px 10px;
+    text-align: center;
+    transform: rotate(-10deg); /* Tilted effect */
+    transition: transform 0.5s ease;
+}
+
+.polaroid:hover {
+    transform: rotate(-5deg); /* Slight movement on hover */
+}
+
+.situation_image, .clickable {
+    max-width: 100%;
+    height: auto;
+}
+
+.clickable {
+    cursor: pointer;
 }
 
 .options {
     display: flex;
     flex-direction: column;
     align-items: center;
+    font-size: 1.2em; /* Größere Schrift */
+    color: #444; /* Leicht dunklere Schriftfarbe */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.15); /* Textschatten */
+    /* Weitere Stiloptionen für '.options' falls nötig */
 }
 
+
 .options button {
-    margin: 5px 0; /* Ändern Sie dies, um Abstand nur oben und unten hinzuzufügen */
+    margin: 5px 0; /* Abstand oben und unten */
     padding: 10px 15px;
-    font-size: 1em;
-    color: white;
-    background-color: #007bff;
-    border: none;
-    border-radius: 5px;
+    font-size: 1.2em; /* Etwas größer für bessere Lesbarkeit */
+    color: #f4f4f4; /* Helles Grau für einen Retro-Look */
+    background-color: #0056b3; /* Dunkleres Blau für einen klassischen Look */
+    border: 2px solid #f4f4f4; /* Hinzufügen eines leichten Randes */
+    border-radius: 3px; /* Weniger abgerundete Ecken für einen klassischen Stil */
     cursor: pointer;
     width: 600px; /* Feste Breite für die Schaltflächen */
+    font-family: 'Courier New', monospace; /* Monospace-Schriftart für einen Retro-Look */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Schatten für Tiefe */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Sanfter Übergang für Hover-Effekt */
 }
 
 .options button:hover {
-    background-color: #0056b3;
+    background-color: #007bff; /* Heller Blau für Hover */
+    transform: translateY(-2px); /* Leichte Bewegung nach oben beim Hover */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3); /* Vergrößerter Schatten für Hover-Effekt */
 }
+
 
 .hidden {
     display: none;
@@ -103,6 +161,7 @@ body {
 }
 
 #language-dropdown {
+    display: none; /* Hide the dropdown by default. Remove this later */
     margin-bottom: 20px;
     text-align: center;
 }

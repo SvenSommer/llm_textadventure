@@ -9,6 +9,7 @@
 <body>
     <div class="container">
         <h1>Adventure Generator</h1>
+        <h4>Version 0.1</h4>
         <div id="language-dropdown">
             <select id="language-select">
                 <option value="de">German</option>
@@ -20,8 +21,13 @@
         </div>
 
         <div id="story_summary" class="situation_summary"></div>
-        <div id="image_text" class="situation_summary">Click here to generate image</div> <!-- Clickable text element -->
-        <img id="situation_image" class="situation_image" style="display:none;" src=""> <!-- Initially hidden -->
+
+        <div id="polaroid" class="polaroid">
+            <div id="image_text" class="situation_summary clickable">Click here to generate image</div> <!-- Clickable text element, initially visible -->
+            <img id="situation_image" class="situation_image" style="display:none;" src=""> <!-- Initially hidden image -->
+        </div>
+        
+
         <div id="situation_summary" class="situation_summary"></div>
         
         <div id="options" class="options"></div>

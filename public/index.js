@@ -63,7 +63,7 @@ function initcurrentSituation(language) {
     }
     else if (language === 'de') {
         currentSituation = {
-            situation_summary: 'Wähle den Ort für das Textadventure.',
+            situation_summary: 'He Abenenteuer! Wähle den Ort an dem sich dein Leben für immer ändern wird.',
             character: undefined,
             place: undefined,
             init_complete: false,
@@ -122,6 +122,7 @@ async function generateAndDisplayImage(imageText) {
 
 function displayOptions(options) {
     const optionsDiv = document.getElementById('options');
+    optionsDiv.classList.remove('fade-out');//
     optionsDiv.innerHTML = '';
 
     if (options.length === 0) {
@@ -181,8 +182,50 @@ function confirmNewOption(newOption) {
 }
 
 
+const loadingTexts = [
+    "Eine mutige Wahl...",
+    "Eine interessante Wahl...",
+    "Eine ungewöhnliche Wahl...",
+    "Eine unerwartete Wahl...",
+    "Nun, das ist interessant...",
+    "Hmm, das ist interessant...",
+    "Es wird spannend...",
+    "Das wird spannend...",
+    "Das führt zu unerwarteten Konsequenzen...",
+    "Das wird Konsequenzen haben...",
+    "Das wird Folgen haben...",
+    "Das wird interessant...",
+    "Na wie du meinst...",
+    "Wie du willst...",
+    "Moment, damit habe ich nicht gerechnet...",
+    "Das habe ich nicht erwartet...",
+    "Das ist ungewöhnlich...",
+    "Das ist unerwartet...",
+    "Schauen wir uns das mal an...",
+    "Das ist eine interessante Wahl..."
+
+    // Fügen Sie hier weitere Texte hinzu
+];
+
+function getRandomLoadingText() {
+    return loadingTexts[Math.floor(Math.random() * loadingTexts.length)];
+}
 
 async function selectOption(option) {
+    // Starten der Animation und Anzeigen des Ladetextes
+    document.getElementById('options').classList.add('fade-out');
+    document.getElementById('situation_summary').textContent = getRandomLoadingText();
+    document.getElementById('situation_summary').style.display = 'block';
+    const imageTextElement = document.getElementById('image_text');
+    imageTextElement.textContent = undefined;
+    document.getElementById('story_summary').textContent = undefined;
+    const situationImage = document.getElementById('situation_image');
+    situationImage.src = undefined;
+
+
+
+
+
     // Überprüfen, ob ein Charakter ausgewählt wurde und die Situation aktualisieren
     if (currentSituation.place === undefined) {
         currentSituation.place = option;

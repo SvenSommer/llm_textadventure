@@ -24,7 +24,7 @@ async function generate_next_situation(situation, option, language) {
         "character": "Vom Spieler zu definieren",
         "story_summary": "[Entwickle den Anfang der Geschichte aus der Perspektive des Erzählers. Was ist bisher in der Welt des Spiels passiert?]",
         "situation_summary": "[Stelle die Anfangssituation vor. Frage den Spieler: 'Wer möchtest du sein?' und biete Charakteroptionen an, die zuvor entwickelt wurden.]",
-        "situation_image": "[Beschreibe ein Bild für Dall-E, das den gewählten Ort in seiner aktuellen Situation zeigt. Die Beschreibung sollte detailreich sein, um ein aussagekräftiges Bild zu erzeugen.]",
+        "situation_image": "[Beschreibe ein Bild für Maler, der den gewählten Ort in seiner aktuellen Anfangssituation zeigt und deute die Geschichte an, die sich entwickeln wird. Die Beschreibung sollte detailreich sein, um ein aussagekräftiges Bild zu erzeugen. Schreibe mindestens 5 Sätze.]",
         "options": [
           "[Definiere Charakteroption 1]",
           "[Definiere Charakteroption 2]",
@@ -50,13 +50,13 @@ async function generate_next_situation(situation, option, language) {
           "situation_image": "${situation.situation_image}",
           "selected_option": "${option}"
         },
-        "task": "Generiere eine neue Situation für das Textadventure. Ort und Charakter bleiben gleich. Die neue Situation soll eine Fortsetzung der letzten sein, basierend auf der gewählten Option. Entwickle eine neue Situationsskizze und erweitere die Gesamtgeschichte entsprechend. Stelle sechs neue Handlungsoptionen vor. Beschreibe zudem ein Bild für Dall-E, das den Charakter in seiner aktuellen Situation am aktuellen Ort zeigt.",
+        "task": "Generiere eine neue Situation für das Textadventure. Ort und Charakter bleiben gleich. Die neue Situation soll eine Fortsetzung der letzten sein, basierend auf der gewählten Option. Entwickle eine neue Situationsskizze und erweitere die Gesamtgeschichte entsprechend. Stelle sechs neue Handlungsoptionen vor. Beschreibe zudem ein Bild der Situation für einen Maler. Beachte die jewiligen Anweisungen in den "[" "]" Klammern",
         "new_situation": {
           "place": "${situation.place}",
           "character": "${situation.character}",
           "situation_summary": "[Reagiere auf die ausgewählte Option aus der 'last_situation'. Die Zusammenfassung der neuen Situation sollte 3 bis 10 Sätze umfassen.]",
           "story_summary": "[Fasse die gesamte Geschichte einschließlich der neuen Entwicklung zusammen.]",
-          "situation_image": "[Beschreibe ein Bild für Dall-E, das den Charakter in seiner aktuellen Situation am aktuellen Ort darstellt. Die Beschreibung sollte detailliert genug sein, um ein aussagekräftiges Bild zu erzeugen.]",
+          "situation_image": "[Beschreibe ein Bild der neuen Situation für Maler. Fange mit dem wichtigesten an und gib klare Anweisungen. Benutze einfache Sprache. In dem Bild soll die Spannung zu spüren sein, die die aktuelle Situation widerspiegelt.. Die Beschreibung sollte detailreich sein, um ein aussagekräftiges Bild zu erzeugen. Schreibe mindestens 5 Sätze.]",
           "options": [
             "[Option 1]",
             "[Option 2]",

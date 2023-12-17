@@ -14,10 +14,10 @@ async function query_image(prompt) {
     // Send a request to generate an image
     console.log('Sending prompt to OpenAI to generate image:');
     const response = await openai.images.generate({
-      model: "dall-e-2",
+      model: process.env.OpenApiImageModel,
       prompt: prompt,
       n: 1,
-      size: "256x256",
+      size: process.env.OpenApiImageSize,
       user: process.env.OpenApiUSER
     });
 

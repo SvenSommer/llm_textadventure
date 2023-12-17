@@ -74,7 +74,7 @@ async function generate_next_situation(situation, option, language) {
     try {
       console.log('Sending prompt to OpenAI API with option:', option, 'and attempt:', attempt, '..');
       const response = await openai.chat.completions.create({
-        model: 'gpt-3.5-turbo-0613', // Stellen Sie sicher, dass Sie das korrekte Modell verwenden
+        model: 'gpt-4',
         messages: [{
           role: "user",
           content: prompt

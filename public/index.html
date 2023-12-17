@@ -2,13 +2,13 @@
 <html>
 
 <head>
-    <title>Text Adventure</title>
+    <title>Adventure Generator</title>
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 
 <body>
     <div class="container">
-        <h1>Text Adventure</h1>
+        <h1>Adventure Generator</h1>
         <div id="language-dropdown">
             <select id="language-select">
                 <option value="de">German</option>
@@ -20,11 +20,13 @@
         </div>
 
         <div id="story_summary" class="situation_summary"></div>
-        <img id="situation_image" class="situation_image" src="">
+        <div id="image_text" class="image_text">Click here to generate image</div> <!-- Clickable text element -->
+        <img id="situation_image" class="situation_image" style="display:none;" src=""> <!-- Initially hidden -->
         <div id="situation_summary" class="situation_summary"></div>
-
+        
         <div id="options" class="options"></div>
         <button id="back-button" class="back-button">Go Back</button>
+        
     </div>
     <script src="index.js"></script>
 </body>

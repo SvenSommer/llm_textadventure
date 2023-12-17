@@ -89,23 +89,31 @@ function updateSituation(situation) {
 }
 
 async function displaySituation(situation) {
-    // Textinhalt sofort anzeigen
-    const situationDiv = document.getElementById('situation_summary');
-    situationDiv.textContent = situation.situation_summary;
-    const storyDiv = document.getElementById('story_summary');
-    storyDiv.textContent = situation.story_summary;
+    // Display text content
+    document.getElementById('situation_summary').textContent = situation.situation_summary;
+    document.getElementById('story_summary').textContent = situation.story_summary;
+    
+    // Set image text and click event
+    const imageTextElement = document.getElementById('image_text');
+    imageTextElement.textContent = situation.situation_image
+    imageTextElement.onclick = () => generateAndDisplayImage(situation.situation_image);
 
-    // Bild nur laden, wenn situation.situation_image definiert ist
-    if (situation.situation_image !== undefined) {
-        const situationImage = document.getElementById('situation_image');
-        let imageurl = await generateImage(situation.situation_image);
-        console.log("imageurl", imageurl);
-        situationImage.src = imageurl;
-    }
-
-    // Optionen anzeigen
+    // Display options
     displayOptions(situation.options);
 }
+
+async function generateAndDisplayImage(imageText) {
+    if (imageText) {
+        let imageurl = await generateImage(imageText);
+        console.log("imageurl", imageurl);
+        const situationImage = document.getElementById('situation_image');
+        situationImage.src = imageurl;
+        situationImage.style.display = 'block'; // Show the image
+    }
+}
+
+// The rest of your code...
+
 
 
 

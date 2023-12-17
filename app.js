@@ -15,7 +15,8 @@ app.get('/', (req, res) => {
 app.post('/generate_next_situation', async (req, res) => {
   const option = req.body.option;
   const situation = req.body.situation;
-  const new_situation = await generate_next_situation(situation, option);
+  const language = req.body.language;
+  const new_situation = await generate_next_situation(situation, option, language);
  
   res.json({ situation: new_situation });
 });

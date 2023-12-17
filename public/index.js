@@ -3,20 +3,11 @@ require('dotenv').config();
 
 
 let language = 'de';
-let currentSituation = null;
+let currentSituation = undefined;
 let situationHistory = [];
-
-let characterOptions = [
-    'Ein mutiger Ritter',
-    'Ein schlauer Zauberer',
-    'Ein geschickter Dieb',
-    'Ein weiser Heiler',
-    'Ein findiger Wissenschaftler'
-];
 
 function initializeGame() {
     currentSituation = initcurrentSituation(language)
-    
     updateSituation(currentSituation);
     updateBackButtonVisibility();
 }
@@ -25,6 +16,9 @@ function initcurrentSituation(language) {
     if (language === 'en') {
         currentSituation = {
             summary: 'Where do you want your adventure to take place?',
+            character: undefined,
+            place: undefined,
+            init_complete: false,
             options: [
                 'A world of fantasy and magic',
                 'A science-fiction space opera',
@@ -38,6 +32,9 @@ function initcurrentSituation(language) {
     else if (language === 'fr') {
         currentSituation = {
             summary: 'Où voulez-vous que votre aventure se déroule?',
+            character: undefined,
+            place: undefined,
+            init_complete: false,
             options: [
                 'Un monde de fantaisie et de magie',
                 'Une opéra spatial de science-fiction',
@@ -51,6 +48,9 @@ function initcurrentSituation(language) {
     else if (language === 'es') {
         currentSituation = {
             summary: '¿Dónde quieres que se desarrolle tu aventura?',
+            character: undefined,
+            place: undefined,
+            init_complete: false,
             options: [
                 'Un mundo de fantasía y magia',
                 'Una ópera espacial de ciencia ficción',
@@ -63,13 +63,17 @@ function initcurrentSituation(language) {
     }
     else if (language === 'de') {
         currentSituation = {
-            summary: 'Wo soll dein Abenteuer stattfinden?',
+            summary: 'Wähle den Ort für das Textadventure.',
+            character: undefined,
+            place: undefined,
+            init_complete: false,
             options: [
-                'Eine Welt voller Fantasie und Magie',
-                'Eine Science-Fiction-Space-Opera',
-                'Der Wilde Westen',
-                'Ein Firmenbüro',
-                'Eine psychedelische Traumwelt'
+                "Eine verzauberte Burg",
+                "Ein futuristisches Raumschiff",
+                "Ein geheimnisvoller Dschungel",
+                "Eine mittelalterliche Stadt",
+                "Eine verlassene Unterwasserstadt",
+                "Eine dystopische Metropole"
             ],
             language: language
         };
@@ -115,33 +119,32 @@ function createButton(text, clickHandler) {
 
 
 async function selectOption(option) {
-    // Überprüfen, ob ein Ort ausgewählt wurde und Charakterauswahl starten
+    // Überprüfen, ob ein Charakter ausgewählt wurde und die Situation aktualisieren
     if (currentSituation.place === undefined) {
         currentSituation.place = option;
-        currentSituation.summary = 'Welchen Charakter möchtest du wählen?';
-        currentSituation.options = characterOptions;
+        currentSituation = await queryNextSituation(currentSituation, option, language);
         updateSituation(currentSituation);
-        return;
-    }
-
-    // Überprüfen, ob ein Charakter ausgewählt wurde und die Situation aktualisieren
-    if (currentSituation.character === undefined) {
+    }else if (!currentSituation.init_complete) { 
         currentSituation.character = option;
-        currentSituation = await queryNextSituation(currentSituation, option);
+        currentSituation = await queryNextSituation(currentSituation, option, language);
+        currentSituation.init_complete = true;
         updateSituation(currentSituation);
-    } else {
+    }
+    
+    else {
         // Ansonsten normal fortfahren
-        currentSituation = await queryNextSituation(currentSituation, option);
+        currentSituation = await queryNextSituation(currentSituation, option, language);
         updateSituation(currentSituation);
     }
 }
 
 
-async function queryNextSituation(situation, option) {
+async function queryNextSituation(situation, option, language) {
+    console.log('Querying next situation for:', situation, option, language);
     const response = await fetch('/generate_next_situation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ situation, option })
+        body: JSON.stringify({ situation, option, language })
     });
     const data = await response.json();
     return data.situation;
